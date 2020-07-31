@@ -11,7 +11,12 @@ const IssueList = ({ issues, showDetail }) => {
 };
 
 const IssueDetail = ({ issue, showDetail }) => {
-  return <h4 onClick={() => showDetail(issue)}>{issue.title}</h4>;
+  return (
+    <div>
+      <h4 onClick={() => showDetail(issue)}>{issue.title}</h4>
+      <p>{issue.body}</p>
+    </div>
+  );
 };
 
 export default IssueList;
