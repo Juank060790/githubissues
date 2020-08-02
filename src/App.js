@@ -18,9 +18,11 @@ function App() {
   const [issues, setIssues] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
-  const [comments, setComments] = useState([])
-  const [commentsLoading, setCommentsLoading] = useState(false)
-  const [commentNum, setCommentNum] = useState(null)
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentPageNum, setCommentPageNum] = useState(1)
+  const [commentTotalPageNum, setCommentTotalPageNum] = useState(1)
+  const [urlFetchComments, setUrlFetchComments] = useState("")
 
   const [searchTerm, setSearchTerm] = useState("facebook/react");
 
@@ -40,19 +42,36 @@ function App() {
 
   useEffect(() => {
     const fetchComments = async () => {
-      if (!owner || !repo) return;
+      if (!urlFetchComments) return;
       setCommentsLoading(true)
-      const url = `https://api.github.com/repos/${owner}/${repo}/issues/${commentNum}/comments`
-      const response = await fetch(url);
-      const data = await response.json();
-
-      console.log(data)
-      setComments(data)
-      setCommentsLoading(false)
+      try {
+        const response = await fetch(urlFetchComments);
+        const data = await response.json();
+        if (response.status === 200) {
+          const link = response.headers.get("link");
+          if (link) {
+            const getTotalPage = link.match(
+              /page=(\d+)&per_page=\d+>; rel="last"/
+            );
+            if (getTotalPage) {
+              setCommentTotalPageNum(parseInt(getTotalPage[1]));
+            }
+          }
+          setComments((c) => [...c, ...data]);
+          setErrorMsg(null)
+        } else {
+          setErrorMsg(`FETCH COMMENTS ERROR: ${data.message}`);
+          setShowModal(false);
+        }
+      } catch (error) {
+        setErrorMsg(`FETCH COMMENTS ERROR: ${error.message}`);
+        setShowModal(false)
+      }
+      setCommentsLoading(false);
     }
-    fetchComments() 
-    
-  }, [owner, repo, commentNum])
+    fetchComments()
+
+  }, [urlFetchComments])
 
   useEffect(() => {
     const fetchIssue = async () => {
@@ -62,6 +81,7 @@ function App() {
       try {
         const response = await fetch(url);
         const data = await response.json();
+        console.log("data", data);
         if (response.status === 200) {
           const link = response.headers.get("link");
           if (link) {
@@ -88,14 +108,27 @@ function App() {
   };
 
 
-  const showDetail = (issue) => {
-    setCommentNum(issue.number)
-    
-    setSelectedIssue(issue);
+  const showDetail = (item) => {
     setShowModal(true);
-
-    console.log('title', issue.title);
+    if (selectedIssue?.number !== item.number) {
+      setComments([]);
+      setCommentPageNum(1);
+      setCommentTotalPageNum(1);
+      setSelectedIssue(item)
+      setUrlFetchComments(
+        `https://api.github.com/repos/${owner}/${repo}/issues/${item.number}/comments?page=1&per_page=5`
+      )
+    }
   };
+
+  const handleMoreComments = () => {
+    if (commentPageNum >= commentTotalPageNum) return;
+    const url = `https://api.github.com/repos/${owner}/${repo}/issues/${
+      selectedIssue.number
+      }/comments?page=${commentPageNum + 1}&per_page=5`
+    setCommentPageNum((num) => num + 1);
+    setUrlFetchComments(url)
+  }
   return (
     <div className="App">
       <Container>
@@ -118,16 +151,16 @@ function App() {
             <IssueList issues={issues} showDetail={showDetail} />
           )}
 
-        {commentsLoading ? (
-          <ClipLoader color="#f86c6b" size={150} loading={true} />
-        ) : (
-            <IssueModal
-              selectedIssue={selectedIssue}
-              showModal={showModal}
-              setShowModal={setShowModal}
-              comments={comments}
-            />
-          )}
+        <IssueModal
+          selectedIssue={selectedIssue}
+          loadingComments={commentsLoading}
+          showModal={showModal}
+          setShowModal={setShowModal}
+          comments={comments}
+          handleMore={handleMoreComments}
+          disableShowMore={commentPageNum === commentTotalPageNum}
+        />
+
 
       </Container>
     </div>
