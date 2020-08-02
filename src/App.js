@@ -29,7 +29,32 @@ function App() {
     // Get the url
     const repo = searchTerm.substring(searchTerm.lastIndexOf("/") + 1);
     const withoutRepo = searchTerm.substring(0, searchTerm.lastIndexOf("/"));
-    const owner = witho                  
+    const owner = withoutRepo.substring(withoutRepo.lastIndexOf("/") + 1);
+    if (!repo || !owner) {
+      setErrorMsg("Wrong Input");
+    } else {
+      setRepo(repo);
+      setOwner(owner);
+    }
+  };
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!owner || !repo) return;
+      setCommentsLoading(true)
+      const url = `https://api.github.com/repos/${owner}/${repo}/issues/${commentNum}/1`
+      const response = await fetch(url);
+      const data = await response.json();
+
+      console.log(data)
+      setComments(data)
+      
+    }
+    fetchComments()
+    
+  }, [owner, repo, commentNum])
+
+  useEffect(() => {
     const fetchIssue = async () => {
       if (!owner || !repo) return;
       setLoading(true);
@@ -45,7 +70,6 @@ function App() {
             if (getTotalPage) {
               setTotalPageNum(parseInt(getTotalPage[1]));
             }
-            console.log(data)
           }
           setIssues(data);
         } else {
@@ -57,7 +81,6 @@ function App() {
       setLoading(false);
     };
     fetchIssue();
-
   }, [owner, repo, pageNum]);
 
   const handleSearchInputChange = (event) => {
