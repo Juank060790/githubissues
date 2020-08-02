@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Row, Col } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import Moment from "react-moment";
 
 const IssueList = ({ issues, showDetail }) => {
@@ -8,7 +8,7 @@ const IssueList = ({ issues, showDetail }) => {
       {issues.map((issue) => (
         <IssueDetail key={issue.id} issue={issue} showDetail={showDetail} />
       ))}
-    </div> 
+    </div>
   );
 };
 

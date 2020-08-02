@@ -20,7 +20,9 @@ function App() {
   const [selectedIssue, setSelectedIssue] = useState(null);
   const [comments, setComments] = useState([]);
   const [commentsLoading, setCommentsLoading] = useState(false);
-  const [commentNum, setCommentNum] = useState(null);
+  const [commentPageNum, setCommentPageNum] = useState(1);
+  const [commentTotalPageNum, setCommentTotalPageNum] = useState(1);
+  const [urlFetchComments, setUrlFetchComments] = useState("");
 
   const [searchTerm, setSearchTerm] = useState("facebook/react");
 
@@ -37,6 +39,38 @@ function App() {
       setOwner(owner);
     }
   };
+
+  useEffect(() => {
+    const fetchComments = async () => {
+      if (!urlFetchComments) return;
+      setCommentsLoading(true);
+      try {
+        const response = await fetch(urlFetchComments);
+        const data = await response.json();
+        if (response.status === 200) {
+          const link = response.headers.get("link");
+          if (link) {
+            const getTotalPage = link.match(
+              /page=(\d+)&per_page=\d+>; rel="last"/
+            );
+            if (getTotalPage) {
+              setCommentTotalPageNum(parseInt(getTotalPage[1]));
+            }
+          }
+          setComments((c) => [...c, ...data]);
+          setErrorMsg(null);
+        } else {
+          setErrorMsg(`FETCH COMMENTS ERROR: ${data.message}`);
+          setShowModal(false);
+        }
+      } catch (error) {
+        setErrorMsg(`FETCH COMMENTS ERROR: ${error.message}`);
+        setShowModal(false);
+      }
+      setCommentsLoading(false);
+    };
+    fetchComments();
+  }, [urlFetchComments]);
 
   useEffect(() => {
     const fetchIssue = async () => {
@@ -72,9 +106,26 @@ function App() {
     setSearchTerm(event.target.value);
   };
 
-  const showDetail = (issue) => {
+  const showDetail = (item) => {
     setShowModal(true);
-    setSelectedIssue(issue);
+    if (selectedIssue?.number !== item.number) {
+      setComments([]);
+      setCommentPageNum(1);
+      setCommentTotalPageNum(1);
+      setSelectedIssue(item);
+      setUrlFetchComments(
+        `https://api.github.com/repos/${owner}/${repo}/issues/${item.number}/comments?page=1&per_page=5`
+      );
+    }
+  };
+
+  const handleMoreComments = () => {
+    if (commentPageNum >= commentTotalPageNum) return;
+    const url = `https://api.github.com/repos/${owner}/${repo}/issues/${
+      selectedIssue.number
+    }/comments?page=${commentPageNum + 1}&per_page=5`;
+    setCommentPageNum((num) => num + 1);
+    setUrlFetchComments(url);
   };
   return (
     <div className="App">
@@ -98,16 +149,15 @@ function App() {
           <IssueList issues={issues} showDetail={showDetail} />
         )}
 
-        {commentsLoading ? (
-          <ClipLoader color="#f86c6b" size={150} loading={true} />
-        ) : (
-          <IssueModal
-            selectedIssue={selectedIssue}
-            showModal={showModal}
-            setShowModal={setShowModal}
-            comments={comments}
-          />
-        )}
+        <IssueModal
+          selectedIssue={selectedIssue}
+          loadingComments={commentsLoading}
+          showModal={showModal}
+          setShowModal={setShowModal}
+          comments={comments}
+          handleMore={handleMoreComments}
+          disableShowMore={commentPageNum === commentTotalPageNum}
+        />
       </Container>
     </div>
   );
