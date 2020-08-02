@@ -42,15 +42,15 @@ function App() {
     const fetchComments = async () => {
       if (!owner || !repo) return;
       setCommentsLoading(true)
-      const url = `https://api.github.com/repos/${owner}/${repo}/issues/${commentNum}/1`
+      const url = `https://api.github.com/repos/${owner}/${repo}/issues/${commentNum}/comments`
       const response = await fetch(url);
       const data = await response.json();
 
       console.log(data)
       setComments(data)
-      
+      setCommentsLoading(false)
     }
-    fetchComments()
+    fetchComments() 
     
   }, [owner, repo, commentNum])
 
