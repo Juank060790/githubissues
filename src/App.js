@@ -18,6 +18,9 @@ function App() {
   const [issues, setIssues] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
+  const [comments, setComments] = useState([]);
+  const [commentsLoading, setCommentsLoading] = useState(false);
+  const [commentNum, setCommentNum] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("facebook/react");
 
@@ -95,11 +98,16 @@ function App() {
           <IssueList issues={issues} showDetail={showDetail} />
         )}
 
-        <IssueModal
-          selectedIssue={selectedIssue}
-          showModal={showModal}
-          setShowModal={setShowModal}
-        />
+        {commentsLoading ? (
+          <ClipLoader color="#f86c6b" size={150} loading={true} />
+        ) : (
+          <IssueModal
+            selectedIssue={selectedIssue}
+            showModal={showModal}
+            setShowModal={setShowModal}
+            comments={comments}
+          />
+        )}
       </Container>
     </div>
   );

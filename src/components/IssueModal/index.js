@@ -1,7 +1,11 @@
 import React from "react";
 import { Modal } from "react-bootstrap";
 
-const IssueModal = ({ showModal, setShowModal, selectedIssue }) => {
+const ReactMarkdown = require("react-markdown");
+
+const IssueModal = ({ showModal, setShowModal, selectedIssue, comments }) => {
+  // console.log('modal comments body',comments[0].body)
+  if (!comments) return <div></div>;
   return (
     <div>
       {selectedIssue && (
@@ -16,7 +20,18 @@ const IssueModal = ({ showModal, setShowModal, selectedIssue }) => {
               {selectedIssue.title}
             </Modal.Title>
           </Modal.Header>
-          <Modal.Body>...</Modal.Body>
+          <Modal.Body>
+            <ReactMarkdown>{selectedIssue.body}</ReactMarkdown>
+
+            <h2>Comments:</h2>
+            {selectedIssue.comments}
+
+            <p>
+              {comments.map((item) => (
+                <div>{item.body}</div>
+              ))}
+            </p>
+          </Modal.Body>
         </Modal>
       )}
     </div>
