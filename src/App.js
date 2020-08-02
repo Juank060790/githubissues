@@ -24,7 +24,7 @@ function App() {
   const [commentTotalPageNum, setCommentTotalPageNum] = useState(1);
   const [urlFetchComments, setUrlFetchComments] = useState("");
 
-  const [searchTerm, setSearchTerm] = useState("facebook/react");
+  const [searchTerm, setSearchTerm] = useState("Search");
 
   const handleSubmitSearchForm = (event) => {
     event.preventDefault();
