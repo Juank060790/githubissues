@@ -43,7 +43,7 @@ function App() {
       try {
         const response = await fetch(url);
         const data = await response.json();
-
+        console.log("data", data);
         if (response.status === 200) {
           const link = response.headers.get("link");
           if (link) {
@@ -72,7 +72,6 @@ function App() {
   const showDetail = (issue) => {
     setShowModal(true);
     setSelectedIssue(issue);
-    console.log("issue list", issue.title);
   };
   return (
     <div className="App">

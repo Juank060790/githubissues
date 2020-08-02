@@ -36,3 +36,37 @@
     transform: rotate(360deg);
   }
 }
+
+
+.text-area-list{
+text-align: justify;
+}
+
+.issue-list-button:hover{
+  background-color: #282c3414;
+  cursor: pointer;
+}
+
+.time-comments{
+  text-align: left;
+  font-weight: 300;
+  font-style: italic;
+  margin: 10px;
+  color: #282c34;
+}
+
+.row-list{
+  background-color: rgba(192, 235, 249, 0.084);
+  margin: 20px;
+  border-radius: 10px;
+  padding: 10px;
+}
+
+.title-list{
+  margin-top: 20px;
+  text-align: left;
+}
+
+.avatar-list{
+  margin-top: 20px ;
+}
