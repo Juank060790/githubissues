@@ -144,7 +144,12 @@ function App() {
           setPageNum={setPageNum}
         />
         {loading ? (
-          <ClipLoader color="#f86c6b" size={150} loading={true} />
+          <ClipLoader
+            color="#f86c6b"
+            backgroundSize="100vh"
+            size={350}
+            loading={true}
+          />
         ) : (
           <IssueList issues={issues} showDetail={showDetail} />
         )}

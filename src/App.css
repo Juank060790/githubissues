@@ -1,5 +1,13 @@
+
 .App {
+  color: rgba(255, 255, 255, 0.714);
   text-align: center;
+  background-color: #252526;
+
+}
+
+body{
+ 
 }
 
 .App-logo {
@@ -22,6 +30,7 @@
   justify-content: center;
   font-size: calc(10px + 2vmin);
   color: white;
+  
 }
 
 .App-link {
@@ -43,7 +52,8 @@ text-align: justify;
 }
 
 .issue-list-button:hover{
-  background-color: #282c3414;
+  background-color: #aeaeaf8e;
+  border-radius: 5px;
   cursor: pointer;
 }
 
@@ -52,7 +62,7 @@ text-align: justify;
   font-weight: 300;
   font-style: italic;
   margin: 10px;
-  color: #282c34;
+  color: rgba(255, 255, 255, 0.714);
 }
 
 .row-list{

@@ -40,12 +40,7 @@ const IssueDetail = ({ issue, showDetail }) => {
               Last update: <Moment fromNow>{issue.created_at}</Moment>
             </span>
           </div>
-          <p className="text-area-list">
-            {issue.body.slice(0, 200)}
-            {/* <Button className="btn-list" variant="primary">
-              more...
-            </Button> */}
-          </p>
+          <p className="text-area-list">{issue.body.slice(0, 200)}</p>
         </Col>
       </Row>
     </div>
