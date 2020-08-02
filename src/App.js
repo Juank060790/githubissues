@@ -18,6 +18,9 @@ function App() {
   const [issues, setIssues] = useState([]);
   const [showModal, setShowModal] = useState(false);
   const [selectedIssue, setSelectedIssue] = useState(null);
+  const [comments, setComments] = useState([])
+  const [commentsLoading, setCommentsLoading] = useState(false)
+  const [commentNum, setCommentNum] = useState(null)
 
   const [searchTerm, setSearchTerm] = useState("facebook/react");
 
@@ -26,16 +29,7 @@ function App() {
     // Get the url
     const repo = searchTerm.substring(searchTerm.lastIndexOf("/") + 1);
     const withoutRepo = searchTerm.substring(0, searchTerm.lastIndexOf("/"));
-    const owner = withoutRepo.substring(withoutRepo.lastIndexOf("/") + 1);
-    if (!repo || !owner) {
-      setErrorMsg("Wrong Input");
-    } else {
-      setRepo(repo);
-      setOwner(owner);
-    }
-  };
-
-  useEffect(() => {
+    const owner = witho                  
     const fetchIssue = async () => {
       if (!owner || !repo) return;
       setLoading(true);
@@ -51,6 +45,7 @@ function App() {
             if (getTotalPage) {
               setTotalPageNum(parseInt(getTotalPage[1]));
             }
+            console.log(data)
           }
           setIssues(data);
         } else {
@@ -62,16 +57,21 @@ function App() {
       setLoading(false);
     };
     fetchIssue();
+
   }, [owner, repo, pageNum]);
 
   const handleSearchInputChange = (event) => {
     setSearchTerm(event.target.value);
   };
 
+
   const showDetail = (issue) => {
-    setShowModal(true);
+    setCommentNum(issue.number)
+    
     setSelectedIssue(issue);
-    console.log(issue.title);
+    setShowModal(true);
+
+    console.log('title', issue.title);
   };
   return (
     <div className="App">
@@ -92,17 +92,25 @@ function App() {
         {loading ? (
           <ClipLoader color="#f86c6b" size={150} loading={true} />
         ) : (
-          <IssueList issues={issues} showDetail={showDetail} />
-        )}
+            <IssueList issues={issues} showDetail={showDetail} />
+          )}
 
-        <IssueModal
-          selectedIssue={selectedIssue}
-          showModal={showModal}
-          setShowModal={setShowModal}
-        />
+        {commentsLoading ? (
+          <ClipLoader color="#f86c6b" size={150} loading={true} />
+        ) : (
+            <IssueModal
+              selectedIssue={selectedIssue}
+              showModal={showModal}
+              setShowModal={setShowModal}
+              comments={comments}
+            />
+          )}
+
       </Container>
     </div>
   );
 }
 
 export default App;
+
+
